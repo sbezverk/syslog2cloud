@@ -13,13 +13,13 @@ all: syslog2cloud
 
 syslog2cloud:
 	mkdir -p bin
-	CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -o ./bin/syslog2cloud ./cmd/syslog2cloud
+	CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -o ./bin/syslog2cloud ./cmd/syslog2cloud.go
 
 mac-syslog2cloud:
 	mkdir -p bin
-	CGO_ENABLED=0 GOOS=darwin go build -a -ldflags '-extldflags "-static"' -o ./bin/syslog2cloud.mac ./cmd/syslog2cloud
+	CGO_ENABLED=0 GOOS=darwin go build -a -ldflags '-extldflags "-static"' -o ./bin/syslog2cloud.mac ./cmd/syslog2cloud.go
 
-container: syslog2cloud client server
+container: syslog2cloud
 	docker build -t $(REGISTRY_NAME)/syslog2cloud:$(IMAGE_VERSION) -f ./build/Dockerfile.syslog2cloud .
 
 push: container

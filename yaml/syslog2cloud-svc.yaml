@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: syslog2cloud
+spec:
+  type: LoadBalancer
+  selector:
+    app: syslog2cloud
+  ports:
+    - port: 514
+      protocol: UDP
+      targetPort: 23514

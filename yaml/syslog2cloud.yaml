@@ -11,6 +11,7 @@ spec:
       labels:
         app: syslog2cloud
     spec:
+      hostNetwork: true
       containers:
         - image: docker.io/sbezverk/syslog2cloud:0.0.0
           name: syslog2cloud
@@ -27,6 +28,8 @@ spec:
           volumeMounts:
             - name: syslog
               mountPath: /var/log
+          securityContext:
+            privileged: true
       volumes:
         - hostPath:
             path: /var/log
