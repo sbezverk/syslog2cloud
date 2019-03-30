@@ -10,3 +10,18 @@
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
+
+# Emacs backupfiles
+*~
+
+# Goland files
+.idea
+
+# Cmds being built
+bin
+
+# VScode files
+.vscode
+
+# Mac
+.DS_Store

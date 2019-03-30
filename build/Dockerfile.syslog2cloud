@@ -1,0 +1,4 @@
+FROM alpine
+
+COPY ./bin/syslog2cloud /syslog2cloud
+ENTRYPOINT ["/syslog2cloud"]
