@@ -1,0 +1,37 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+spec:
+  selector:
+    matchLabels:
+      app: syslog2cloud
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: syslog2cloud
+    spec:
+      containers:
+        - image: docker.io/sbezverk/syslog2cloud:0.0.0
+          name: syslog2cloud
+          imagePullPolicy: Always
+          env:
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          volumeMounts:
+            - name: syslog
+              mountPath: /var/log
+      volumes:
+        - hostPath:
+            path: /var/log
+            type: DirectoryOrCreate
+          name: syslog
+metadata:
+  name: syslog2cloud
+  namespace: default
