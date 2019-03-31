@@ -1,4 +1,4 @@
-package server
+package syslog
 
 import (
 	"context"
@@ -7,13 +7,12 @@ import (
 	"go.uber.org/zap"
 )
 
-// maxBufferSize specifies the size of the buffers that
-// are used to temporarily hold data from the UDP packets
-// that we receive.
+// maxBufferSize specifies the maximum size of the syslog
+// message received over UDP
 const maxBufferSize = 1024
 
 // Server receives and  logs syslog messages
-func Server(ctx context.Context, address string, logger *zap.SugaredLogger) (err error) {
+func Server(ctx context.Context, queue chan []byte, address string, logger *zap.SugaredLogger) (err error) {
 	logger.Infof("Starting listening for UPD packets...")
 	pc, err := net.ListenPacket("udp", address)
 	if err != nil {
@@ -32,10 +31,9 @@ func Server(ctx context.Context, address string, logger *zap.SugaredLogger) (err
 				doneChan <- err
 				return
 			}
-
-			logger.Infof("packet-received: bytes=%d from=%s\n",
-				n, addr.String())
-			logger.Infof("Syslog Message: %s", string(buffer[:n]))
+			logger.Infof("Syslog Message from:%s - %s", addr.String(), string(buffer[:n]))
+			// Sending received message for further processing
+			queue <- buffer[:n]
 		}
 	}()
 
