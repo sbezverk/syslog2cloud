@@ -5,6 +5,7 @@ import (
 	"flag"
 	"os"
 
+	"github.com/knative/eventing-sources/pkg/kncloudevents"
 	"github.com/sbezverk/syslog2cloud/pkg/manager"
 	"github.com/sbezverk/syslog2cloud/pkg/syslog"
 	"go.uber.org/zap"
@@ -13,6 +14,7 @@ import (
 const (
 	// Number of workers waiting for a syslog message from the syslog server
 	maxQueueLength = 10
+	sinkURI        = "syslog2cloud.sbezverk.cisco.com"
 )
 
 var (
@@ -33,9 +35,15 @@ func main() {
 
 	// Creating  a queue channel of maxQueueLength elements
 	queue := make(chan []byte, maxQueueLength)
+
+	ce, err := kncloudevents.NewDefaultClient(sinkURI)
+	if err != nil {
+		logger.Errorf("Failed to cloud events client with error: %+v", err)
+		os.Exit(1)
+	}
 	ctx, cancel := context.WithCancel(context.Background())
 	// Starting message manager
-	if err := manager.Server(ctx, queue, logger); err != nil {
+	if err := manager.Server(ctx, queue, logger, ce); err != nil {
 		logger.Errorf("Failed to start messages manager with error: %+v", err)
 		os.Exit(1)
 	}
