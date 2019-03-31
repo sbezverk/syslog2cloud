@@ -31,7 +31,7 @@ func Server(ctx context.Context, queue chan []byte, address string, logger *zap.
 				doneChan <- err
 				return
 			}
-			logger.Infof("Syslog Message from:%s - %s", addr.String(), string(buffer[:n]))
+			logger.Infof("Syslog Message from:%s", addr.String())
 			// Sending received message for further processing
 			queue <- buffer[:n]
 		}
