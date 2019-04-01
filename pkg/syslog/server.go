@@ -62,8 +62,6 @@ func transferSyslogMsg(b []byte, timeStamp, h string, queue chan []byte, logger 
 	pri := validPriority.FindString(string(b))
 	content := strings.TrimPrefix(string(b), pri)
 	host := h[:strings.LastIndex(h, ":")] + " "
-	host = strings.Replace(host, "[", "", -1)
-	host = strings.Replace(host, "]", "", -1)
 	tag := uuid.New().String()[:8]
 
 	var msg []byte

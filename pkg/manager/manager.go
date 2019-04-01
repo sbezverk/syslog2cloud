@@ -60,9 +60,9 @@ func cloudEventFrom(m []byte) (*cloudevents.Event, error) {
 	if err != nil {
 		return nil, err
 	}
-	url := types.ParseURLRef("syslog://" + syslogMsg.Host)
+	url := types.ParseURLRef("/Syslog/" + syslogMsg.Host)
 	if url == nil {
-		return nil, fmt.Errorf("ParseURLRef returned nil for: %s", "syslog://"+syslogMsg.Host)
+		return nil, fmt.Errorf("ParseURLRef returned nil for: %s", "/syslog/"+syslogMsg.Host)
 	}
 	return &cloudevents.Event{
 		Context: cloudevents.EventContextV02{
