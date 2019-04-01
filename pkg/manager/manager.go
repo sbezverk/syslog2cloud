@@ -2,6 +2,7 @@ package manager
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/cloudevents/sdk-go/pkg/cloudevents"
@@ -59,10 +60,14 @@ func cloudEventFrom(m []byte) (*cloudevents.Event, error) {
 	if err != nil {
 		return nil, err
 	}
+	url := types.ParseURLRef("syslog://" + syslogMsg.Host)
+	if url == nil {
+		return nil, fmt.Errorf("ParseURLRef returned nil for: %s", "syslog://"+syslogMsg.Host)
+	}
 	return &cloudevents.Event{
 		Context: cloudevents.EventContextV02{
 			Type:   eventType,
-			Source: *types.ParseURLRef(syslogMsg.Host),
+			Source: *url,
 			Time:   &types.Timestamp{Time: syslogMsg.Time},
 		}.AsV02(),
 		Data: m,
