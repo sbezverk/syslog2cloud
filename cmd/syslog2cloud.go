@@ -14,7 +14,7 @@ import (
 const (
 	// Number of workers waiting for a syslog message from the syslog server
 	maxQueueLength = 10
-	sinkURI        = "http://syslog2cloud.sbezverk.cisco.com"
+	sinkURI        = "http://syslog2cloud.default.svc.k7.sbezverk.cisco.com"
 )
 
 var (

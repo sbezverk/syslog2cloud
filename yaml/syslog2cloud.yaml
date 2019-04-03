@@ -4,18 +4,21 @@ kind: Deployment
 spec:
   selector:
     matchLabels:
-      app: syslog2cloud
+      app: syslog
   replicas: 1
   template:
     metadata:
       labels:
-        app: syslog2cloud
+        app: syslog
     spec:
-      hostNetwork: true
       containers:
         - image: docker.io/sbezverk/syslog2cloud:0.0.0
           name: syslog2cloud
           imagePullPolicy: Always
+          ports:
+            - name: syslog
+              protocol: UDP
+              containerPort: 514
           env:
             - name: POD_NAMESPACE
               valueFrom:

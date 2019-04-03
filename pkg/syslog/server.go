@@ -42,7 +42,7 @@ func Server(ctx context.Context, queue chan []byte, address string, logger *zap.
 			}
 			// get the timestamp of recevied message
 			ts := time.Now().Format("Jan 02 15:04:05") + " "
-			logger.Infof("Syslog Message from: %s content: %s", addr.String(), string(buffer[:n]))
+			logger.Debugf("Syslog Message from: %s content: %s", addr.String(), string(buffer[:n]))
 			go transferSyslogMsg(buffer[:n], ts, addr.String(), queue, logger)
 		}
 	}()
