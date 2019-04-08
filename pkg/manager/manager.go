@@ -18,7 +18,8 @@ const (
 )
 
 // Server receives and  logs syslog messages
-func Server(ctx context.Context, queue chan []byte, logger *zap.SugaredLogger, ce client.Client) (err error) {
+func Server(ctx context.Context, queue chan []byte, logger *zap.SugaredLogger, ce client.Client) error {
+	var err error
 	logger.Infof("Starting Messages Manager ..")
 	go func() {
 		for {
@@ -34,7 +35,7 @@ func Server(ctx context.Context, queue chan []byte, logger *zap.SugaredLogger, c
 		}
 	}()
 
-	return
+	return err
 }
 
 // Retry logic?
