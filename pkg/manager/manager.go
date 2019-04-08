@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	eventType = "dev.knative.k8s.event"
+	eventType = "dev.knative.syslog.message"
 )
 
 // Server receives and  logs syslog messages
