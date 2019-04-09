@@ -18,14 +18,14 @@ const (
 )
 
 // Server receives and  logs syslog messages
-func Server(ctx context.Context, queue chan []byte, logger *zap.SugaredLogger, ce client.Client) error {
+func Server(ctx context.Context, queue chan captainslog.SyslogMsg, logger *zap.SugaredLogger, ce client.Client) error {
 	var err error
 	logger.Infof("Starting Messages Manager ..")
 	go func() {
 		for {
 			select {
 			case msg := <-queue:
-				logger.Infof("Syslog Message:%s", string(msg))
+				logger.Infof("Syslog Message from:%s", msg.Host)
 				go transmitSyslogMsg(ce, msg, logger)
 			case <-ctx.Done():
 				logger.Warn("Messages manager's context has been cancelled, exiting...")
@@ -39,7 +39,7 @@ func Server(ctx context.Context, queue chan []byte, logger *zap.SugaredLogger, c
 }
 
 // Retry logic?
-func transmitSyslogMsg(ce client.Client, msg []byte, logger *zap.SugaredLogger) {
+func transmitSyslogMsg(ce client.Client, msg captainslog.SyslogMsg, logger *zap.SugaredLogger) {
 
 	ce2Send, err := cloudEventFrom(msg)
 	if err != nil {
@@ -56,11 +56,7 @@ func transmitSyslogMsg(ce client.Client, msg []byte, logger *zap.SugaredLogger) 
 	logger.Infof("Succeeded to send cloud event: %+v", cloudEvent)
 }
 
-func cloudEventFrom(m []byte) (*cloudevents.Event, error) {
-	syslogMsg, err := captainslog.NewSyslogMsgFromBytes(m)
-	if err != nil {
-		return nil, err
-	}
+func cloudEventFrom(syslogMsg captainslog.SyslogMsg) (*cloudevents.Event, error) {
 	url := types.ParseURLRef("/Syslog/" + syslogMsg.Host)
 	if url == nil {
 		return nil, fmt.Errorf("ParseURLRef returned nil for: %s", "/syslog/"+syslogMsg.Host)
@@ -71,6 +67,6 @@ func cloudEventFrom(m []byte) (*cloudevents.Event, error) {
 			Source: *url,
 			Time:   &types.Timestamp{Time: syslogMsg.Time},
 		}.AsV02(),
-		Data: m,
+		Data: syslogMsg.Content,
 	}, nil
 }

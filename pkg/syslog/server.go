@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/digitalocean/captainslog"
 	"github.com/google/uuid"
 
 	"go.uber.org/zap"
@@ -21,7 +22,7 @@ var (
 )
 
 // Server receives and  logs syslog messages
-func Server(ctx context.Context, queue chan []byte, address string, logger *zap.SugaredLogger) (err error) {
+func Server(ctx context.Context, queue chan captainslog.SyslogMsg, address string, logger *zap.SugaredLogger) (err error) {
 	logger.Infof("Starting listening for UPD packets...")
 	pc, err := net.ListenPacket("udp", address)
 	if err != nil {
@@ -59,7 +60,7 @@ func Server(ctx context.Context, queue chan []byte, address string, logger *zap.
 	return
 }
 
-func transferSyslogMsg(b []byte, timeStamp, h string, queue chan []byte, logger *zap.SugaredLogger) {
+func transferSyslogMsg(b []byte, timeStamp, h string, queue chan captainslog.SyslogMsg, logger *zap.SugaredLogger) {
 	// Sending received message for further processing
 	pri := validPriority.FindString(string(b))
 	content := strings.TrimPrefix(string(b), pri)
@@ -72,5 +73,10 @@ func transferSyslogMsg(b []byte, timeStamp, h string, queue chan []byte, logger 
 	msg = append(msg, host...)
 	msg = append(msg, tag...)
 	msg = append(msg, content...)
-	queue <- msg
+	syslogMsg, err := captainslog.NewSyslogMsgFromBytes(msg)
+	if err != nil {
+		logger.Errorf("Failed to parse message into a Syslog Message struct with error: %+v", err)
+		return
+	}
+	queue <- syslogMsg
 }

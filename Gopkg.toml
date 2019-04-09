@@ -34,13 +34,30 @@
   version = "0.1.13"
 
 [[constraint]]
-  branch = "master"
-  name = "github.com/knative/eventing-sources"
-
-[[constraint]]
   name = "go.uber.org/zap"
   version = "1.9.1"
 
 [prune]
   go-tests = true
   unused-packages = true
+
+[[constraint]]
+ version = "kubernetes-1.12.3"
+  name = "k8s.io/api"
+
+[[constraint]]
+  version = "kubernetes-1.12.3"
+  name = "k8s.io/apiextensions-apiserver"
+
+[[constraint]]
+  version = "kubernetes-1.12.3"
+  name = "k8s.io/apimachinery"
+
+#[[override]]
+#  name = "k8s.io/client-go"
+#  version = "9.0.0"
+
+[[constraint]]
+  name= "sigs.k8s.io/controller-runtime"
+#  version = "v0.1.9"
+  revision = "0f0740db56812f732d90ff7df3520a291a9f04c9"
